@@ -92,7 +92,8 @@ func (r *Repo) GetAllPosts(ctx context.Context) ([]app.Post, error) {
 		posts = append(posts, *p.posts.Convert())
 	}
 
-	return posts, nil
+	res := sortPosts(posts)
+	return res, nil
 }
 
 func (r *Repo) SaveComment(ctx context.Context, comment app.Comment) (*app.Comment, error) {
@@ -148,5 +149,7 @@ func (r *Repo) CommentsByID(ctx context.Context, id int, parentID *int, limit in
 		}
 	}
 
-	return comments, nil
+	res := paginationComments(comments, limit, offset)
+
+	return res, nil
 }

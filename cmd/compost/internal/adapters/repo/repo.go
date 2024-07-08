@@ -93,7 +93,7 @@ func (r *Repo) PostByID(ctx context.Context, id int) (*app.Post, error) {
 }
 
 func (r *Repo) GetAllPosts(ctx context.Context) ([]app.Post, error) {
-	const query = `SELECT * FROM post_table ORDER BY created_at DESC`
+	const query = `SELECT * FROM post_table ORDER BY created_at`
 	posts := []Post{}
 	err := r.sql.SelectContext(ctx, &posts, query)
 	if err != nil {
@@ -127,12 +127,12 @@ func (r *Repo) CommentsByID(ctx context.Context, id int, parentID *int, limit in
 	var err error
 
 	if parentID != nil {
-		const query = `SELECT * FROM comment_table WHERE post_id = $1 and parent_comment_id = $2 ORDER BY created_at DESC LIMIT $3 OFFSET $4`
+		const query = `SELECT * FROM comment_table WHERE post_id = $1 and parent_comment_id = $2 ORDER BY created_at LIMIT $3 OFFSET $4`
 		err = r.sql.SelectContext(ctx, &comments, query, id, parentID, limit, offset)
 
 	}
 	if parentID == nil {
-		const query = `SELECT * FROM comment_table WHERE post_id = $1 and parent_comment_id is null ORDER BY created_at DESC LIMIT $2 OFFSET $3`
+		const query = `SELECT * FROM comment_table WHERE post_id = $1 and parent_comment_id is null ORDER BY created_at LIMIT $2 OFFSET $3`
 		err = r.sql.SelectContext(ctx, &comments, query, id, limit, offset)
 	}
 

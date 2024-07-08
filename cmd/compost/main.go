@@ -33,11 +33,13 @@ type (
 )
 
 var (
-	cfgFile  = flag.String("cfg", "/build/config.yml", "path to config file")
+	// /build/config.yml
+	cfgFile  = flag.String("cfg", "./cmd/compost/config.yml", "path to config file")
 	flagRepo = flag.String("repotype", "postgres", "what type of repository to use")
 )
 
 func main() {
+	flag.Parse()
 
 	ctx, cancel := signal.NotifyContext(context.Background(),
 		syscall.SIGHUP, syscall.SIGINT, syscall.SIGQUIT, syscall.SIGABRT, syscall.SIGTERM)
@@ -113,11 +115,14 @@ func configRead(cfgPath string) config {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	defer file.Close()
+
 	cfg := config{}
 	err = yaml.NewDecoder(file).Decode(&cfg)
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	return cfg
 }
