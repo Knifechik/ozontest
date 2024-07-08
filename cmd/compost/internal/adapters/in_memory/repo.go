@@ -133,7 +133,7 @@ func (r *Repo) CommentsByID(ctx context.Context, id int, parentID *int, limit in
 	defer pInfo.mu.Unlock()
 
 	comments := make([]app.Comment, 0, len(pInfo.comments))
-	
+
 	for _, val := range pInfo.comments {
 
 		if parentID != nil && val.ParentCommentID != nil {

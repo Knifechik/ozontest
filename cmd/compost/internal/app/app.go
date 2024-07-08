@@ -5,13 +5,13 @@ import "sync"
 type App struct {
 	repo             Repo
 	mu               sync.Mutex
-	CommentsObserver map[int]*listener //postID
+	CommentsObserver map[int]*listener
 }
 
 type listener struct {
 	postID int
 	mu     sync.Mutex
-	subs   map[int]chan Comment //userID
+	subs   map[int]chan Comment
 }
 
 func New(r Repo) *App {

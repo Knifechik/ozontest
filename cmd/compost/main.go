@@ -4,7 +4,6 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"github.com/sipki-tech/database/connectors"
 	"gopkg.in/yaml.v3"
 	"log"
 	"log/slog"
@@ -20,7 +19,6 @@ import (
 )
 
 const defaultPort = "8080"
-const migrateDir = "migrate"
 
 type (
 	config struct {
@@ -35,30 +33,17 @@ type (
 )
 
 var (
-	postgresDBConf = connectors.PostgresDB{
-		User:     "user123",
-		Password: "pass123",
-		Host:     "postgres",
-		Port:     5432,
-		Database: "postgres",
-		Parameters: &connectors.PostgresDBParameters{
-			Mode: connectors.PostgresSSLDisable},
-	}
+	cfgFile  = flag.String("cfg", "/build/config.yml", "path to config file")
 	flagRepo = flag.String("repotype", "postgres", "what type of repository to use")
 )
 
 func main() {
-	flag.Parse()
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = defaultPort
-	}
 
 	ctx, cancel := signal.NotifyContext(context.Background(),
 		syscall.SIGHUP, syscall.SIGINT, syscall.SIGQUIT, syscall.SIGABRT, syscall.SIGTERM)
 	defer cancel()
 
-	cfg := configRead()
+	cfg := configRead(*cfgFile)
 
 	var r app.Repo
 
@@ -89,7 +74,7 @@ func main() {
 
 	mux := graph.New(myApp)
 
-	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
+	log.Printf("connect to http://localhost:%s/ for GraphQL playground", defaultPort)
 
 	log.Fatal(run(ctx, mux))
 
@@ -123,8 +108,8 @@ func run(ctx context.Context, mux *http.ServeMux) error {
 	return nil
 }
 
-func configRead() config {
-	file, err := os.Open("/build/config.yml")
+func configRead(cfgPath string) config {
+	file, err := os.Open(cfgPath)
 	if err != nil {
 		log.Fatal(err)
 	}

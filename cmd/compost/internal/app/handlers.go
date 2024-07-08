@@ -3,7 +3,6 @@ package app
 import (
 	"context"
 	"fmt"
-	"log"
 )
 
 func (a *App) CreatePost(ctx context.Context, title, content string, authorID int, commentAllowed bool) (*Post, error) {
@@ -62,7 +61,7 @@ func (a *App) CreateComment(ctx context.Context, postID int, content string, aut
 	if err != nil {
 		return nil, fmt.Errorf("commentLengthCheck: %w", err)
 	}
-	
+
 	post, err := a.repo.PostByID(ctx, postID)
 	if err != nil {
 		return nil, fmt.Errorf("repo.PostByID: %w", err)
@@ -89,7 +88,6 @@ func (a *App) CreateComment(ctx context.Context, postID int, content string, aut
 
 		val, ok := a.CommentsObserver[postID]
 		if ok {
-			log.Printf("CommentObserver: %v", val)
 
 			val.mu.Lock()
 			defer val.mu.Unlock()
@@ -151,12 +149,7 @@ func (a *App) Subscriptions(ctx context.Context, postID, userID int) (<-chan Com
 			delete(a.CommentsObserver, postID)
 		}
 
-		log.Println("deleted from map subs", a.CommentsObserver)
 	}()
-
-	//достать канал, закрыть канал, после удалить канал
-
-	log.Println(a.CommentsObserver)
 
 	return ch, nil
 }

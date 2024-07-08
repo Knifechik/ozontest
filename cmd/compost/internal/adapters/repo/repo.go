@@ -32,14 +32,13 @@ func (c Connector) DSN() (string, error) {
 }
 
 func New(ctx context.Context, cfg Config) (*Repo, error) {
-	const driverName = "postgres"
 
 	migrates, err := migrations.Parse(cfg.MigrateDir)
 	if err != nil {
 		return nil, fmt.Errorf("migration.Parse: %w", err)
 	}
 
-	err = migrations.Run(ctx, driverName, &cfg.Postgres, migrations.Up, migrates)
+	err = migrations.Run(ctx, cfg.Driver, &cfg.Postgres, migrations.Up, migrates)
 	if err != nil {
 		return nil, fmt.Errorf("migration.Run: %w", err)
 	}
@@ -49,7 +48,7 @@ func New(ctx context.Context, cfg Config) (*Repo, error) {
 		return nil, fmt.Errorf("connector.DSN: %w", err)
 	}
 
-	db, err := sqlx.Open(driverName, dsn)
+	db, err := sqlx.Open(cfg.Driver, dsn)
 	if err != nil {
 		return nil, fmt.Errorf("sqlx.Open: %w", err)
 	}
