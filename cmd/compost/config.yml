@@ -1,0 +1,5 @@
+db:
+  migrate_dir: "migrate"
+  driver: "postgres"
+  postgres:
+    connection_dsn: "postgres://user123:pass123@postgres:5432/postgres?sslmode=disable"
