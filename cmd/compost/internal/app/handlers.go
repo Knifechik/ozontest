@@ -3,6 +3,7 @@ package app
 import (
 	"context"
 	"fmt"
+	"time"
 )
 
 func (a *App) CreatePost(ctx context.Context, title, content string, authorID int, commentAllowed bool) (*Post, error) {
@@ -88,6 +89,9 @@ func (a *App) CreateComment(ctx context.Context, postID int, content string, aut
 
 		val, ok := a.CommentsObserver[postID]
 		if ok {
+
+			ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+			defer cancel()
 
 			val.mu.Lock()
 			defer val.mu.Unlock()

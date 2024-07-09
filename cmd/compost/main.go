@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"gopkg.in/yaml.v3"
 	"log"
-	"log/slog"
 	"net"
 	"net/http"
 	"os"
@@ -33,9 +32,10 @@ type (
 )
 
 var (
+	// ./cmd/compost/config.yml
 	// /build/config.yml
-	cfgFile  = flag.String("cfg", "./cmd/compost/config.yml", "path to config file")
-	flagRepo = flag.String("repotype", "postgres", "what type of repository to use")
+	cfgFile  = flag.String("cfg", "/build/config.yml", "path to config file")
+	flagRepo = flag.String("repo", "postgres", "what type of repository to use")
 )
 
 func main() {
@@ -93,8 +93,8 @@ func run(ctx context.Context, mux *http.ServeMux) error {
 		errc <- srv.ListenAndServe()
 	}()
 
-	slog.Info("started", net.JoinHostPort("localhost", fmt.Sprintf("%s", defaultPort)))
-	defer slog.Info("shutdown")
+	log.Printf("started %s", net.JoinHostPort("localhost", fmt.Sprintf("%s", defaultPort)))
+	defer log.Println("shutdown")
 
 	var err error
 	select {
